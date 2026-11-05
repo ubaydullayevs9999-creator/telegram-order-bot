@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiyim do'koni</title>
+<style>
+  :root{
+    --bg:#f7f7f9; --card:#fff; --ink:#12141a; --muted:#6c7280; --line:#e4e6eb;
+    --accent:#4f6aff; --accent2:#8a2bf4; --ok:#1a9c5d; --warn:#d8443c; --shadow:0 2px 10px rgba(16,20,32,.08);
+  }
+  [data-theme="dark"]{
+    --bg:#101216; --card:#171a20; --ink:#eef1f6; --muted:#98a1b3; --line:#242832;
+    --accent:#5b74ff; --accent2:#9b52ff; --ok:#3ddc97; --warn:#ff6b63; --shadow:0 2px 12px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45}
+  header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px 8px}
+  .row{display:flex;align-items:center;gap:10px}
+  .brand{font-weight:700;font-size:17px;letter-spacing:.2px}
+  .hello{font-size:12.5px;color:var(--muted)}
+  .sp{flex:1}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;
+    padding:5px 10px;font-size:12.5px;font-weight:600}
+  .chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+  main{padding:12px 12px 118px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media (min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .card img{width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--line);display:block}
+  .cb{padding:9px 10px 10px}
+  .nm{font-weight:650;font-size:14px}
+  .ds{font-size:11.5px;color:var(--muted);margin-top:2px;min-height:15px}
+  .pr{font-weight:750;margin-top:5px;font-size:14.5px}
+  .btn{border:0;border-radius:11px;padding:10px 12px;font-size:14px;font-weight:650;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn.mini{width:auto;padding:7px 11px;font-size:13px;border-radius:9px}
+  .btn:disabled{opacity:.5}
+  .step{display:flex;align-items:center;gap:6px}
+  .step button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);font-size:19px;font-weight:700;line-height:1;cursor:pointer}
+  .step .q{min-width:22px;text-align:center;font-weight:700}
+  #bar{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top,var(--bg) 65%,transparent);display:none}
+  #bar .inner{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:9px 10px;box-shadow:var(--shadow)}
+  #bar .t{font-weight:750}
+  #bar .s{font-size:12px;color:var(--muted)}
+  #sheet{position:fixed;inset:0;z-index:9;display:none}
+  #sheet .veil{position:absolute;inset:0;background:rgba(6,8,14,.5)}
+  #panel{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow:auto;background:var(--bg);
+    border-radius:18px 18px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
+  .ph{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .pt{font-weight:750;font-size:16px}
+  .li{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .li img{width:46px;height:56px;object-fit:cover;border-radius:8px;background:var(--line)}
+  .li .g{flex:1}
+  .li .n{font-weight:650;font-size:13.5px}
+  .li .m{font-size:12px;color:var(--muted)}
+  .tot{display:flex;justify-content:space-between;font-weight:750;margin:12px 0}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 5px}
+  input,textarea{width:100%;padding:12px 12px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);font-size:16px;font-family:inherit}
+  textarea{min-height:64px;resize:vertical}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px}
+  .err{color:var(--warn);font-size:13px;font-weight:650;margin-top:9px;display:none}
+  .ok{color:var(--ok);font-size:13px;font-weight:650;margin-top:9px;display:none}
+  .gate{max-width:420px;margin:8vh auto 0;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:18px 16px 20px;box-shadow:var(--shadow)}
+  .gate h2{margin:0 0 4px;font-size:19px}
+  .gate p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+  .big{font-size:34px;text-align:center;margin:6px 0 2px}
+  .num{text-align:center;font-weight:800;font-size:22px;margin:6px 0}
+  .hide{display:none!important}
+  .stack{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <div>
+      <div class="brand" id="brand">Kiyim do'koni</div>
+      <div class="hello" id="hello"></div>
+    </div>
+    <div class="sp"></div>
+    <button class="chip" data-v="uz" id="vuz">O'zb</button>
+    <button class="chip" data-v="ru" id="vru">Рус</button>
+  </div>
+</header>
+
+<main>
+  <!-- 1) Kirish: faqat birinchi marta -->
+  <section id="gate" class="gate hide">
+    <h2 id="gTitle"></h2>
+    <p id="gSub"></p>
+    <label id="gL1"></label><input id="gName" autocomplete="name" inputmode="text">
+    <label id="gL2"></label><input id="gPhone" autocomplete="tel" inputmode="tel" placeholder="+998 90 123 45 67">
+    <div class="err" id="gErr"></div>
+    <div class="stack"><button class="btn" data-a="gate"><span id="gBtn"></span></button></div>
+    <div class="hint" id="gHint"></div>
+  </section>
+
+  <!-- 2) Do'kon -->
+  <section id="shop" class="hide">
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<div id="bar">
+  <div class="inner">
+    <div>
+      <div class="t" id="barTotal"></div>
+      <div class="s" id="barCount"></div>
+    </div>
+    <div class="sp"></div>
+    <button class="btn mini" data-a="openForm" id="barBtn"></button>
+  </div>
+</div>
+
+<div id="sheet">
+  <div class="veil" data-a="close"></div>
+  <div id="panel">
+    <!-- savat -->
+    <div id="pCart" class="hide">
+      <div class="ph"><div class="pt" id="cTitle"></div><div class="sp"></div>
+        <button class="btn ghost mini" data-a="close" id="cClose"></button></div>
+      <div id="cList"></div>
+      <div class="tot"><span id="cTotL"></span><span id="cTot"></span></div>
+      <button class="btn" data-a="openForm" id="cOrder"></button>
+      <div class="hint" id="cHint"></div>
+    </div>
+
+    <!-- buyurtma formasi -->
+    <div id="pForm" class="hide">
+      <div class="ph"><div class="pt" id="fTitle"></div><div class="sp"></div>
+        <button class="btn ghost mini" data-a="cart" id="fBack"></button></div>
+      <div id="fItems" class="hint"></div>
+      <label id="fL1"></label><input id="fName" autocomplete="name">
+      <label id="fL2"></label><input id="fPhone" autocomplete="tel" inputmode="tel" placeholder="+998 90 123 45 67">
+      <div class="stack" style="margin-top:10px">
+        <button class="btn ghost" data-a="fill" id="fFill"></button>
+      </div>
+      <label id="fL3"></label><textarea id="fAddr"></textarea>
+      <div class="hint" id="fAddrHint"></div>
+      <div class="err" id="fErr"></div>
+      <div class="stack" style="margin-top:14px">
+        <button class="btn" data-a="submit" id="fSend"></button>
+      </div>
+      <div class="hint" id="fHint"></div>
+    </div>
+
+    <!-- tasdiq -->
+    <div id="pDone" class="hide">
+      <div class="big">✅</div>
+      <div class="num" id="dNum"></div>
+      <div style="text-align:center;color:var(--muted);font-size:13.5px" id="dText"></div>
+      <div class="stack" style="margin-top:18px"><button class="btn" data-a="close" id="dBtn"></button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+var tg = (window.Telegram && window.Telegram.WebApp) || null;
+var LS = { prof: 'ob_profile_v1', cart: 'ob_cart_v1', lang: 'ob_lang_v1' };
+
+var T = {
+  uz: {
+    hello: 'Xush kelibsiz, ', helloAnon: 'Xush kelibsiz! Rasmlarni tanlab savatga soling.',
+    gateTitle: 'Do\'konga xush kelibsiz', gateSub: 'Ism va telefon raqamingizni kiriting — keyingi safar avtomatik to\'ldiriladi.',
+    name: 'Ismingiz', phone: 'Telefon raqamingiz', gateBtn: 'Do\'konni ochish',
+    gateHint: 'Raqamni +998 bilan yozsangiz ham, shunchaki 901234567 deb ham yozsa bo\'ladi.',
+    needName: 'Ismingizni yozing (kamida 2 harf).', needPhone: 'Raqam noto\'g\'ri. Masalan: 901234567',
+    add: 'Savatga', inCart: 'Savatda', cart: 'Savat', empty: 'Savat hozircha bo\'sh.',
+    total: 'Yekun', order: 'Buyurtma berish', count: 'ta', close: 'Yopish', back: 'Orqaga',
+    fTitle: 'Buyurtmani rasmiylashtirish', fName: 'Ism', fPhone: 'Telefon',
+    fill: '\u21BA Saqlangan ma\'lumotni qo\'yish', fAddr: 'Manzil (ixtiyoriy)',
+    fAddrHint: 'Manzil yozmasangiz ham bo\'ladi — sotuvchi telefon qilib so\'raydi.',
+    send: 'Sotuvchiga yuborish', sending: 'Yuborilmoqda...',
+    items: 'Tarkibi', doneTitle: 'Buyurtma raqami: ', doneText: 'Sotuvchiga yubordik. Tez orada siz bilan bog\'lanadi.',
+    again: 'Xaridni davom ettirish', err: 'Yuborib bo\'lmadi: ', saved: 'Ma\'lumot qayta qo\'yildi.',
+    thanks: 'Rahmat! Buyurtmangiz sotuvchiga yetib bordi.',
+  },
+  ru: {
+    hello: 'Добро пожаловать, ', helloAnon: 'Добро пожаловать! Выбирайте по фото и кладите в корзину.',
+    gateTitle: 'Добро пожаловать в магазин', gateSub: 'Введите имя и телефон — в следующий раз подставятся автоматически.',
+    name: 'Ваше имя', phone: 'Номер телефона', gateBtn: 'Открыть магазин',
+    gateHint: 'Можно написать +998 или просто 901234567.',
+    needName: 'Напишите имя (минимум 2 буквы).', needPhone: 'Неверный номер. Например: 901234567',
+    add: 'В корзину', inCart: 'В корзине', cart: 'Корзина', empty: 'Корзина пуста.',
+    total: 'Итого', order: 'Оформить', count: 'шт', close: 'Закрыть', back: 'Назад',
+    fTitle: 'Оформление заказа', fName: 'Имя', fPhone: 'Телефон',
+    fill: '\u21BA Подставить сохранённые данные', fAddr: 'Адрес (не обязательно)',
+    fAddrHint: 'Можно не указывать — продавец позвонит и спросит.',
+    send: 'Отправить продавцу', sending: 'Отправка...',
+    items: 'Состав', doneTitle: 'Номер заказа: ', doneText: 'Отправили продавцу — скоро свяжется с вами.',
+    again: 'Продолжить покупки', err: 'Не удалось отправить: ', saved: 'Данные подставлены.',
+    thanks: 'Спасибо! Заказ доставлен продавцу.',
+  },
+};
+
+var lang = 'uz', catalog = [], cart = {}, profile = null, sending = false;
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function money(n) {
+  var s = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return lang === 'ru' ? s + ' сом' : s + " so'm";
+}
+function read(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; } }
+function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+function normPhone(v) {
+  var d = String(v || '').replace(/\D/g, '');
+  if (d.length === 13 && d.indexOf('8998') === 0) d = d.slice(1);
+  if (d.length === 12 && d.indexOf('998') === 0) return '+' + d;
+  if (d.length === 9 && /^[1-9]/.test(d)) return '+998' + d;
+  if (d.length === 10 && d.charAt(0) === '8' && /^[1-9]/.test(d.slice(1))) return '+998' + d.slice(1);
+  return null;
+}
+function items() {
+  var out = [];
+  for (var i = 0; i < catalog.length; i++) {
+    var p = catalog[i], q = cart[p.id] || 0;
+    if (q > 0) out.push({ p: p, qty: q, sum: p.price * q });
+  }
+  return out;
+}
+function total() { return items().reduce(function (s, x) { return s + x.sum; }, 0); }
+function count() { return items().reduce(function (s, x) { return s + x.qty; }, 0); }
+
+function bootTheme() {
+  if (!tg) return;
+  try { tg.ready(); tg.expand(); } catch (e) {}
+  var u = null;
+  try { u = tg.initDataUnsafe && tg.initDataUnsafe.user; } catch (e) {}
+  if (u && u.language_code && String(u.language_code).toLowerCase().indexOf('ru') === 0) lang = 'ru';
+  var th = tg.themeParams || {};
+  if (th.bg_color) document.documentElement.style.setProperty('--bg', th.bg_color);
+  if (th.text_color) document.documentElement.style.setProperty('--ink', th.text_color);
+  if (tg.colorScheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  try { tg.setHeaderColor && tg.setHeaderColor(th.bg_color || (tg.colorScheme === 'dark' ? '#101216' : '#f7f7f9')); } catch (e) {}
+  try { tg.setBackgroundColor && tg.setBackgroundColor(th.bg_color || (tg.colorScheme === 'dark' ? '#101216' : '#f7f7f9')); } catch (e) {}
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  $('vuz').className = 'chip' + (lang === 'uz' ? ' on' : '');
+  $('vru').className = 'chip' + (lang === 'ru' ? ' on' : '');
+  var t = T[lang];
+  $('hello').textContent = profile ? t.hello + profile.name : t.helloAnon;
+  $('gTitle').textContent = t.gateTitle; $('gSub').textContent = t.gateSub;
+  $('gL1').textContent = t.name; $('gL2').textContent = t.phone;
+  $('gBtn').textContent = t.gateBtn; $('gHint').textContent = t.gateHint;
+  $('cTitle').textContent = t.cart; $('cClose').textContent = t.close; $('cTotL').textContent = t.total;
+  $('cOrder').textContent = t.order; $('cHint').textContent = t.empty;
+  $('fTitle').textContent = t.fTitle; $('fBack').textContent = t.back;
+  $('fL1').textContent = t.fName; $('fL2').textContent = t.fPhone; $('fFill').textContent = t.fill;
+  $('fL3').textContent = t.fAddr; $('fAddrHint').textContent = t.fAddrHint;
+  $('fSend').textContent = t.send; $('fHint').textContent = t.fAddrHint;
+  $('dBtn').textContent = t.again;
+  $('barBtn').textContent = t.order;
+  render();
+}
+
+function showScreen() {
+  var need = !profile;
+  $('gate').className = need ? 'gate' : 'gate hide';
+  $('shop').className = need ? 'hide' : '';
+  if (need) setTimeout(function () { $('gName').focus(); }, 60);
+}
+
+function render() {
+  var t = T[lang], g = $('grid'), html = '';
+  for (var i = 0; i < catalog.length; i++) {
+    var p = catalog[i], q = cart[p.id] || 0;
+    html += '<div class="card">' +
+      '<img src="' + esc(p.img) + '" width="800" height="1000" ' + (i < 3 ? '' : 'loading="lazy" ') +
+      'alt="' + esc(p[lang].name) + '" ' +
+      'onerror="this.style.background=\'var(--line)\';this.removeAttribute(\'src\')">' +
+      '<div class="cb"><div class="nm">' + esc(p[lang].name) + '</div>' +
+      '<div class="ds">' + esc(p[lang].desc) + '</div>' +
+      '<div class="pr">' + money(p.price) + '</div>';
+    if (q > 0) {
+      html += '<div class="step" style="margin-top:8px">' +
+        '<button data-d="' + esc(p.id) + '">−</button>' +
+        '<span class="q">' + q + '</span>' +
+        '<button data-i="' + esc(p.id) + '">＋</button>' +
+        '<div class="sp" style="flex:1"></div>' +
+        '<button class="btn mini" data-a="cart">' + t.inCart + '</button>' +
+        '</div>';
+    } else {
+      html += '<button class="btn" style="margin-top:8px" data-a="add" data-p="' + esc(p.id) + '">' + t.add + '</button>';
+    }
+    html += '</div></div>';
+  }
+  g.innerHTML = html;
+  var c = count();
+  $('bar').style.display = c > 0 ? 'block' : 'none';
+  $('barTotal').textContent = money(total());
+  $('barCount').textContent = c + ' ' + t.count;
+  $('cTot').textContent = money(total());
+  if ($('pCart').className.indexOf('hide') < 0) renderCart();
+  if ($('pForm').className.indexOf('hide') < 0) renderFormItems();
+}
+
+function renderCart() {
+  var t = T[lang], list = items(), html = '';
+  if (!list.length) { $('cList').innerHTML = '<div class="hint">' + t.empty + '</div>'; $('cOrder').disabled = true; return; }
+  $('cOrder').disabled = false;
+  for (var i = 0; i < list.length; i++) {
+    var x = list[i];
+    html += '<div class="li"><img src="' + esc(x.p.img) + '" alt="">' +
+      '<div class="g"><div class="n">' + esc(x.p[lang].name) + '</div>' +
+      '<div class="m">' + x.qty + ' x ' + money(x.p.price) + ' = <b>' + money(x.sum) + '</b></div></div>' +
+      '<div class="step"><button data-d="' + esc(x.p.id) + '">−</button><span class="q">' + x.qty + '</span>' +
+      '<button data-i="' + esc(x.p.id) + '">＋</button></div></div>';
+  }
+  $('cList').innerHTML = html;
+}
+
+function renderFormItems() {
+  var t = T[lang], list = items();
+  var s = list.map(function (x) { return x.p[lang].name + ' x ' + x.qty; }).join(', ');
+  $('fItems').innerHTML = t.items + ': ' + esc(s || t.empty) + ' — <b>' + money(total()) + '</b>';
+}
+
+function openSheet(which) {
+  $('pCart').className = which === 'cart' ? '' : 'hide';
+  $('pForm').className = which === 'form' ? '' : 'hide';
+  $('pDone').className = which === 'done' ? '' : 'hide';
+  $('sheet').style.display = which ? 'block' : 'none';
+  if (which === 'cart') renderCart();
+  if (which === 'form') {
+    $('fName').value = (profile && profile.name) || '';
+    $('fPhone').value = (profile && profile.phone) || '';
+    $('fErr').style.display = 'none';
+    renderFormItems();
+  }
+}
+
+function flash(el, msg, isErr) {
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function submitGate() {
+  var t = T[lang];
+  var name = $('gName').value.trim().slice(0, 60);
+  var phone = normPhone($('gPhone').value);
+  if (name.length < 2) return flash($('gErr'), t.needName, true);
+  if (!phone) return flash($('gErr'), t.needPhone, true);
+  flash($('gErr'), '');
+  profile = { name: name, phone: phone };
+  save(LS.prof, profile);
+  $('gPhone').value = phone;
+  applyLang();
+  showScreen();
+}
+
+function submitOrder() {
+  var t = T[lang];
+  if (sending) return;
+  var name = $('fName').value.trim().slice(0, 60);
+  var phone = normPhone($('fPhone').value);
+  var addr = $('fAddr').value.trim().slice(0, 300);
+  if (name.length < 2) return flash($('fErr'), t.needName, true);
+  if (!phone) return flash($('fErr'), t.needPhone, true);
+  if (!count()) return flash($('fErr'), t.empty, true);
+  flash($('fErr'), '');
+  var payload = {
+    name: name, phone: phone, address: addr, lang: lang,
+    items: items().map(function (x) { return { id: x.p.id, qty: x.qty }; }),
+    total: total(),
+    telegram: tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+      ? { id: tg.initDataUnsafe.user.id, username: tg.initDataUnsafe.user.username || '' } : null,
+  };
+  sending = true;
+  $('fSend').disabled = true;
+  $('fSend').textContent = t.sending;
+  fetch('/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then(function (r) { return r.json().then(function (j) { return { code: r.status, j: j }; }); })
+    .then(function (res) {
+      sending = false;
+      $('fSend').disabled = false;
+      $('fSend').textContent = t.send;
+      if (!res.j || res.j.error) throw new Error((res.j && res.j.error) || ('HTTP ' + res.code));
+      cart = {};
+      save(LS.cart, cart);
+      $('dNum').textContent = t.doneTitle + res.j.id;
+      $('dText').innerHTML = esc(t.doneText) + '<br><b>' + money(res.j.total) + '</b>';
+      openSheet('done');
+      render();
+      if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.notificationOccurred('success'); } catch (e) {} }
+    })
+    .catch(function (e) {
+      sending = false;
+      $('fSend').disabled = false;
+      $('fSend').textContent = t.send;
+      flash($('fErr'), t.err + e.message, true);
+    });
+}
+
+document.addEventListener('click', function (ev) {
+  var el = ev.target.closest ? ev.target.closest('[data-a],[data-i],[data-d],[data-v],#barBtn') : null;
+  if (!el) return;
+  var act = el.getAttribute('data-a');
+  var v = el.getAttribute('data-v');
+  if (v) { lang = v; save(LS.lang, lang); applyLang(); return; }
+  if (act === 'add') { cart[el.getAttribute('data-p')] = (cart[el.getAttribute('data-p')] || 0) + 1; }
+  else if (el.hasAttribute('data-i')) { cart[el.getAttribute('data-i')] = (cart[el.getAttribute('data-i')] || 0) + 1; }
+  else if (el.hasAttribute('data-d')) {
+    var id = el.getAttribute('data-d');
+    cart[id] = Math.max(0, (cart[id] || 0) - 1);
+    if (!cart[id]) delete cart[id];
+  }
+  else if (act === 'gate') { submitGate(); return; }
+  else if (act === 'cart') { openSheet('cart'); return; }
+  else if (act === 'openForm') { if (!count()) return; openSheet('form'); return; }
+  else if (act === 'fill') {
+    if (profile) { $('fName').value = profile.name; $('fPhone').value = profile.phone; flash($('fErr'), ''); }
+    $('fErr').style.display = 'none';
+    flash($('fErr'), T[lang].saved, false);
+    $('fErr').style.color = 'var(--ok)';
+    setTimeout(function () { flash($('fErr'), ''); }, 1400);
+    return;
+  }
+  else if (act === 'submit') { submitOrder(); return; }
+  else if (act === 'close') { openSheet(null); return; }
+  else { return; }
+  save(LS.cart, cart);
+  render();
+});
+
+$('gPhone').addEventListener('blur', function () {
+  var p = normPhone(this.value);
+  if (p) this.value = p;
+});
+$('fPhone').addEventListener('blur', function () {
+  var p = normPhone(this.value);
+  if (p) this.value = p;
+});
+
+function boot() {
+  bootTheme();
+  var savedLang = read(LS.lang);
+  if (!tg && savedLang) lang = savedLang;
+  profile = read(LS.prof);
+  cart = read(LS.cart) || {};
+  applyLang();
+  showScreen();
+  fetch('/api/catalog').then(function (r) { return r.json(); }).then(function (j) {
+    catalog = j.products || [];
+    if (j.store) { $('brand').textContent = j.store; document.title = j.store; }
+    render();
+  }).catch(function () {
+    $('grid').innerHTML = '<div class="hint">Katalog yuklanmadi — internetni tekshiring.</div>';
+  });
+}
+boot();
+</script>
+</body>
+</html>

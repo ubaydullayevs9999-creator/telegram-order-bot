@@ -1,0 +1,13 @@
+# MAXFIY — bu fayl hech qachon commit qilinmaydi
+.env
+.env.local
+
+# mijoz ma'lumotlari
+data/
+*.log
+
+# portativ Node (loyiha ichida, tizimga tegmaydi)
+runtime/
+
+# kerak bo'lsa (hozir 0 ta npm paketi ishlatiladi)
+node_modules/
