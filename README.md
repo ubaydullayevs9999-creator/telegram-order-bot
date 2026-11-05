@@ -74,7 +74,7 @@ Konsolda:
 ```
 Mini-ilova: http://localhost:8130/app
   telefonfrom ochish (bir xil Wi-Fi): http://192.168.1.33:8130/app
-Bot: @demoqoder_bot | token: 90455...Hs (kodga yozilmagan)
+Bot: @sizning_botingiz | token: 12345...Xy (kodga yozilmagan)
  polling boshlandi...
 ```
 Telefon brauzerida `http://192.168.1.33:8130/app` ni oching (laptop bilan **bir
@@ -88,6 +88,15 @@ Nom, qisqa tavsif, to'liq tavsif va `/start` ro'yxatidagi buyruq matnini API
 orqali yozib qo'yadi (band bo'lgan joyga tegmaydi). **Rasm (logo) API orqali
 o'rnatilmaydi** — uni faqat @BotFather qo'yadi:
 `/setuserpic` → botni tanlang → `bot/assets/bot-logo.png` faylini yuboring.
+
+Logotiplar (oq-qora, minimalizm — `node tools\make-logo.js` bilan qayta chiziladi):
+
+| Fayl | Qayerda |
+|---|---|
+| `assets/bot-logo.png` | **asosiy** — qora kvadrat + oq kofta (BotFather uchun shu) |
+| `assets/bot-logo-light.png` | teskari — oq kvadrat + qora kofta (yorug' interfeys) |
+| `assets/bot-logo-frame.png` | ramkali — oq fon + ingichka ramka (sayt, hujjat, presentatsiya) |
+| `assets/bot-logo-transparent.png` | shaffof — faqat belgi (har qanday fon ustiga) |
 
 ### 3.5 To'xtatish
 Konsolda `Ctrl + C` yoki oyna yopilsa bo'ldi. Buyurtmalar `data/orders.json` da qoladi.
@@ -103,9 +112,16 @@ uni faqat telefon brauzerida ochib ko'rsatasiz.
 
 | Yo'l | Qanday | Kamchiligi |
 |---|---|---|
-| **Render.com (bepul)** | repo → New Web Service → start `node index.js`, env: `BOT_TOKEN`, `ADMIN_CHAT_ID`, `STORE_NAME` (`PORT` ni o'zi beradi). Keyin `WEB_APP_URL=https://<nom>.onrender.com/app` | Free rejada 15 daqiqada uxladi, birinchi ochilish 30-50 sek sekin |
-| **Railway.app** | bir xil, $5 bepul kredit | hisob kerak |
+| **Render.com (bepul)** | repo → New Web Service → start **`node web-server.js`**, env: `BOT_TOKEN`, `ADMIN_CHAT_ID`, `STORE_NAME` (`PORT` ni o'zi beradi). Keyin `WEB_APP_URL=https://<nom>.onrender.com/app` | Free rejada 15 daqiqada uxladi, birinchi ochilish 30-50 sek sekin |
+| **Railway.app** | bir xil, `$5` bepul kredit | hisob kerak |
 | **VPS (~150 000 so'm/oy)** | `pm2 start index.js --name dokon` + domen + Caddy/certbot | mijozga sotganda eng to'g'ri yo'l — manzil siznikida bo'ladi |
+
+**Muhim:** hostingga **faqat `web-server.js`** qo'yiladi (mini-ilova + buyurtma
+qabuli). Bot polling'ini (`index.js`) kompyuterda qoldirasiz — bepul Render
+15 daqiqada uxlab, polling'ni o'ldiradi. `web-server.js` `getUpdates` ni
+umumiy chaqirmaydi (testda isbotlangan).
+
+To'liq qadam-baqadam: `docs/render-deploy.md` (loyiha papkasida).
 
 `.env` ga `WEB_APP_URL` ni to'ldiring va qayta ishga tushiring — `/start` ostida
 🛍️ tugma paydo bo'ladi.
@@ -121,11 +137,12 @@ uni faqat telefon brauzerida ochib ko'rsatasiz.
 | Ikkinchi mijoz kerak | `.env` dagi `STORE_NAME` va `BOT_TOKEN` ni almashtiring — 1 daqiqada yangi do'kon |
 | Token ochiq qolib ketdi | BotFather → `/revoke` → yangi token → faqat `.env` ga |
 
-**Har mijozdan oldin tekshiruv (jami 114 ta):**
+**Har mijozdan oldin tekshiruv (jami 139 ta):**
 ```
-..\runtime\node-v24.22.2-win-x64\node.exe tools\simulate.js      # 39 ta mantiq
+..\runtime\node-v24.22.2-win-x64\node.exe tools\simulate.js       # 39 ta mantiq
 ..\runtime\node-v24.22.2-win-x64\node.exe tools\webapp-test.js    # 50 ta mini-ilova
-..\runtime\node-v24.22.2-win-x64\node.exe tools\smoke.js          # 25 ta real jarayon
+..\runtime\node-v24.22.2-win-x64\node.exe tools\smoke.js           # 25 ta real jarayon
+..\runtime\node-v24.22.2-win-x64\node.exe tools\hosting-test.js    # 25 ta hosting rejimi
 ```
 
 ---
@@ -136,7 +153,7 @@ uni faqat telefon brauzerida ochib ko'rsatasiz.
    frontend'da token yo'q — testlar buni avtomatik tekshiradi (`web/index.html`
    ichida `BOT_TOKEN` / `ADMIN_CHAT_ID` izlari ham yo'q).
 2. `.gitignore` `.env` va `data/` ni tashqarida qoldiradi.
-3. Bot konsolda token'ni maskalaydi: `token: 90455...Hs`.
+3. Bot konsolda token'ni maskalaydi: `token: 12345...Xy` (birinchi 5 + oxirgi 2 belgi).
 4. `/img/` yo'li `path.basename` oq ro'yxati bilan himoyalangan — `..%2f.env` kabi
    urinishlar 404 qaytadi.
 5. Bir IP dan daqiqasiga 20 ta buyurtma, so'rov tanasi 20 KB dan oshmaydi.
@@ -147,6 +164,7 @@ uni faqat telefon brauzerida ochib ko'rsatasiz.
 ```
 bot/
   index.js              kirish: polling + mini-ilova serveri (PORT bo'lsa)
+  web-server.js         kirish: FAQAT mini-ilova serveri (Render/Railway uchun)
   start.cmd             ikki marta bosib ishga tushirish
   .env.example          nusxalab .env qiling
   lib/
@@ -160,13 +178,17 @@ bot/
     webapp.js           mini-ilova serveri: /app, /api/catalog, /api/order, /img
   web/index.html        mini-ilova sahifasi (bitta fayl; tashqi CDN yo'q)
   assets/
-    bot-logo.png        bot logotipi (512x512) — BotFather /setuserpic uchun
+    bot-logo.png        asosiy logo: qora kvadrat + oq kofta (BotFather /setuserpic)
+    bot-logo-light.png  teskari variant (oq kvadrat + qora kofta)
+    bot-logo-frame.png  ramkali variant (sayt/hujjat uchun)
+    bot-logo-transparent.png shaffof variant (har qanday fon ustiga)
     img/*.jpg           haqiqiy kiyim fotolari (Pexels, bepul litsenziya)
     img/CREDITS.txt     rasm manbalari + o'zingizniki bilan almashtirish tarzi
   tools/
-    make-logo.js        bot-logo.png ni qayta chizish (0 paket, PNG'ni o'zi yozadi)
+    make-logo.js        logotiplarni qayta chizish (0 paket, PNG'ni o'zi yozadi)
     brand.js            bot nomi/tavsifi/commands ni API orqali sozlash
     simulate.js         39 ta mantiq tekshiruvi (soxta Telegram bilan)
     webapp-test.js      50 ta mini-ilova tekshiruvi (server + API + sahifa)
     smoke.js            25 ta real jarayon tekshiruvi (index.js ni chindan ochadi)
+    hosting-test.js     25 ta hosting tekshiruvi (web-server.js, polling yo'qligi)
 ```
